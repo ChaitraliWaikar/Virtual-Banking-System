@@ -1,0 +1,9 @@
+# IntelliJ
+.idea/
+*.iml
+out/
+build/
+
+# Private config
+config.properties
+*.db
