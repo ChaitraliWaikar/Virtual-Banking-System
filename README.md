@@ -64,7 +64,12 @@ Anyone running the project needs to create their own file.
   
   Add MySQL Connector/J to Project Libraries
 
-📸 Screenshots
+📸 Screenshots (Check images folder for more...)
+![Login Screen](images/login.png), 
+![Profile Page](images/profile.png), 
+![Deposit Page](images/deposit.png), 
+![Withdraw Page](images/withdraw.png), 
+![Passbook Page](images/passbook.png)
 
 🚀 Future Improvements
 
