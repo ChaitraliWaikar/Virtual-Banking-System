@@ -1,5 +1,3 @@
-//TIP: Passbook with account type filtering
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -9,12 +7,10 @@ public class Passbook extends JFrame {
 
     Passbook(String username, String accType) {
 
-        // Fonts
         Font titleFont = new Font("Futura", Font.BOLD, 40);
         Font tableFont = new Font("Calibri", Font.PLAIN, 18);
         Font buttonFont = new Font("Calibri", Font.BOLD, 20);
 
-        // Title with account type
         JLabel title = new JLabel("Passbook - " + accType + " Account", JLabel.CENTER);
         title.setFont(titleFont);
         title.setForeground(Color.WHITE);
@@ -22,7 +18,6 @@ public class Passbook extends JFrame {
         title.setBackground(new Color(0, 102, 204));
         title.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Table setup
         String[] columnNames = {"Date & Time", "Description", "Amount", "Balance"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
@@ -30,24 +25,20 @@ public class Passbook extends JFrame {
         table.setFont(tableFont);
         table.setRowHeight(30);
         table.setGridColor(new Color(200, 200, 200));
-
         table.getTableHeader().setFont(new Font("Calibri", Font.BOLD, 18));
         table.getTableHeader().setBackground(new Color(0, 102, 204));
         table.getTableHeader().setForeground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Back Button
         JButton backButton = new JButton("Back");
         backButton.setFont(buttonFont);
         styleButton(backButton, new Color(255, 51, 51));
-
         backButton.addActionListener(e -> {
             new Home(username);
             dispose();
         });
 
-        // Panels
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(0, 102, 204));
         topPanel.add(title, BorderLayout.CENTER);
@@ -56,7 +47,6 @@ public class Passbook extends JFrame {
         bottomPanel.setBackground(new Color(235, 235, 235));
         bottomPanel.add(backButton);
 
-        // Layout
         Container c = getContentPane();
         c.setLayout(new BorderLayout(20, 20));
         c.add(topPanel, BorderLayout.NORTH);
@@ -64,30 +54,47 @@ public class Passbook extends JFrame {
         c.add(bottomPanel, BorderLayout.SOUTH);
 
         // Load passbook data
-        String url = "jdbc:mysql://localhost:3306/batch2";
-
         try (Connection con = DriverManager.getConnection(
                 DBConfig.getURL(),
                 DBConfig.getUser(),
                 DBConfig.getPass()
         )) {
 
-            String sql = "SELECT * FROM transactions WHERE username=? AND acc_type=? ORDER BY date DESC";
+            // Fetch all transactions for the account
+            String sql = "SELECT date, description, amount " +
+                    "FROM transactions WHERE username=? AND acc_type=? ORDER BY date ASC";
 
             try (PreparedStatement pst = con.prepareStatement(sql)) {
-
                 pst.setString(1, username);
                 pst.setString(2, accType);
 
                 ResultSet rs = pst.executeQuery();
+                double runningBalance = 0.0;
 
+                // Fetch initial balance from accounts table
+                String balSql = "SELECT balance FROM accounts WHERE username=? AND acc_type=?";
+                try (PreparedStatement pstBal = con.prepareStatement(balSql)) {
+                    pstBal.setString(1, username);
+                    pstBal.setString(2, accType);
+                    ResultSet rsBal = pstBal.executeQuery();
+                    if (rsBal.next()) {
+                        runningBalance = rsBal.getDouble("balance");
+                    }
+                }
+
+                // Since we want the Passbook in descending order
+                java.util.List<Object[]> rows = new java.util.ArrayList<>();
                 while (rs.next()) {
-                    String s1 = rs.getString("date");
-                    String s2 = rs.getString("description");
-                    double d1 = rs.getDouble("amount");
-                    double d2 = rs.getDouble("balance");
+                    String date = rs.getString("date");
+                    String desc = rs.getString("description");
+                    double amt = rs.getDouble("amount");
+                    runningBalance += amt; // update running balance
+                    rows.add(new Object[]{date, desc, amt, runningBalance});
+                }
 
-                    tableModel.addRow(new Object[]{s1, s2, d1, d2});
+                // Add in reverse order so newest on top
+                for (int i = rows.size() - 1; i >= 0; i--) {
+                    tableModel.addRow(rows.get(i));
                 }
             }
 
@@ -95,7 +102,6 @@ public class Passbook extends JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
 
-        // Frame settings
         setTitle("Passbook - " + accType);
         setSize(850, 600);
         setLocationRelativeTo(null);
@@ -108,7 +114,6 @@ public class Passbook extends JFrame {
         b.setBackground(bg);
         b.setFocusPainted(false);
         b.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
-
         b.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 b.setBackground(bg.darker());
