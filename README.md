@@ -41,3 +41,44 @@ USE bankapp;
 ```
 Inside the repo, there's a database.sql file.
 Just import it — it contains users, accounts, and transactions tables.
+
+🔑 config.properties
+
+(Not included for security reasons)
+
+Format:
+
+DB_URL=jdbc:mysql://localhost:3306/bankapp
+DB_USER=root
+DB_PASS=yourpassword
+
+
+config.properties is added to .gitignore.
+
+Anyone running the project needs to create their own file.
+
+▶️ How to Run
+
+Open the project in IntelliJ
+
+Run Login.java
+
+Add MySQL Connector/J to Project Libraries
+
+📸 Screenshots
+
+🚀 Future Improvements
+
+Admin panel
+
+Proper field validations
+
+Export passbook as PDF
+
+Dark mode UI
+
+OTP login (maybe)
+
+🤝 Feel Free to Use This
+
+If you're learning Java Swing or JDBC, you can clone this repo and use it however you like!
