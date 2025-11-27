@@ -69,11 +69,8 @@ Anyone running the project needs to create their own file.
 🚀 Future Improvements
 
   Admin panel
-  
   Proper field validations
-  
   Export passbook as PDF
-  
   Dark mode UI
 
 
