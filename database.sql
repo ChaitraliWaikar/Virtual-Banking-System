@@ -1,0 +1,36 @@
+CREATE DATABASE IF NOT EXISTS VBS;
+USE VBS;
+
+--USERS TABLE
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(15),
+    email VARCHAR(100),
+    gender ENUM('male','female','other'),
+    wlimit DECIMAL(10,2) DEFAULT 10000.00,
+    PRIMARY KEY (id)
+);
+
+-- ACCOUNTS TABLE
+CREATE TABLE IF NOT EXISTS accounts (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    acc_type VARCHAR(20) NOT NULL,
+    balance DOUBLE DEFAULT 0,
+    PRIMARY KEY (id),
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+
+-- TRANSACTIONS TABLE
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    description VARCHAR(100),
+    amount DECIMAL(10,2),
+    txn_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    acc_type VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id)
+);
